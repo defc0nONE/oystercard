@@ -1,8 +1,8 @@
 require 'oystercard'
 
 describe Oystercard do
-  let(:station_1) {double :station_1}
-  let(:station_2) {double :station_2}
+  let(:station_1) { double :station_1 }
+  let(:station_2) { double :station_2 }
 
   describe '#balance' do
     it 'checks that a new card has a balance of 0' do
@@ -39,7 +39,7 @@ describe Oystercard do
     end
 
     it 'checks we have minimum amount for our journey' do
-      expect {subject.touch_in(station_1)}.to raise_error 'Sorry, not enough money'
+      expect { subject.touch_in(station_1) }.to raise_error 'Sorry, not enough money'
     end
 
     it 'remembers the entry station' do
@@ -50,9 +50,12 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-    it 'recognize when we touch_out with the card' do
+    before(:each) do
       subject.top_up(Oystercard::MINIMUM_BALANCE)
       subject.touch_in(station_1)
+    end
+
+    it 'recognize when we touch_out with the card' do
       subject.touch_out(station_2)
       expect(subject).not_to be_in_journey
     end
@@ -61,18 +64,14 @@ describe Oystercard do
       expect { subject.touch_out(station_2) }.to change { subject.balance }.by(-Oystercard::MINIMUM_BALANCE)
     end
 
-    it "forgets the entry station" do
-      subject.top_up(Oystercard::MINIMUM_BALANCE)
-      subject.touch_in(station_1)
+    it 'forgets the entry station' do
       subject.touch_out(station_2)
       expect(subject.starting_station).to eq nil
     end
 
-    it 'accept exit-station' do
-      subject.top_up(Oystercard::MINIMUM_BALANCE)
-      subject.touch_in(station_1)
+    it 'records a train journey' do
       subject.touch_out(station_2)
-      expect(subject.journeys).to match_array([{from: station_1, to: station_2}])
+      expect(subject.journeys).to match_array([{ from: station_1, to: station_2 }])
     end
 
   end
