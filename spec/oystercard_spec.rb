@@ -38,13 +38,19 @@ describe Oystercard do
 
   describe '#touch_in' do
     it 'recognize when we touch_in with the card' do
+      subject.top_up(Oystercard::MINIMUM_BALANCE)
       subject.touch_in
       expect(subject).to be_in_journey
     end
+    it "checks we have minimum amount for our journey" do
+      expect {subject.touch_in}.to raise_error 'Sorry, not enough money'
+    end
+
   end
 
   describe '#touch_out' do
     it 'recognize when we touch_out with the card' do
+      subject.top_up(Oystercard::MINIMUM_BALANCE)
       subject.touch_in
       subject.touch_out
       expect(subject).not_to be_in_journey
