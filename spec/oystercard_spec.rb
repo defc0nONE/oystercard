@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   let(:station_1) {double :station_1}
+  let(:station_2) {double :station_2}
 
   describe '#balance' do
     it 'checks that a new card has a balance of 0' do
@@ -50,18 +51,27 @@ describe Oystercard do
     it 'recognize when we touch_out with the card' do
       subject.top_up(Oystercard::MINIMUM_BALANCE)
       subject.touch_in(station_1)
-      subject.touch_out
+      subject.touch_out(station_2)
       expect(subject).not_to be_in_journey
     end
 
     it 'deducts the fare when we touch out' do
-      expect { subject.touch_out }.to change { subject.balance }.by(-Oystercard::MINIMUM_BALANCE)
+      expect { subject.touch_out(station_2) }.to change { subject.balance }.by(-Oystercard::MINIMUM_BALANCE)
     end
+
     it "forget the entry_station" do
       subject.top_up(Oystercard::MINIMUM_BALANCE)
       subject.touch_in(station_1)
-      subject.touch_out
+      subject.touch_out(station_2)
       expect(subject.station_1).to eq nil
     end
+
+    it 'accept exit-station' do
+      subject.top_up(Oystercard::MINIMUM_BALANCE)
+      subject.touch_in(station_1)
+      subject.touch_out(station_2)
+      expect(subject.journeys).to match_array([{from: station_1, to: station_2}])
+    end
+
   end
 end
