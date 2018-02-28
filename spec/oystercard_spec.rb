@@ -37,14 +37,16 @@ describe Oystercard do
       subject.touch_in(station_1)
       expect(subject).to be_in_journey
     end
-    it "checks we have minimum amount for our journey" do
+
+    it 'checks we have minimum amount for our journey' do
       expect {subject.touch_in(station_1)}.to raise_error 'Sorry, not enough money'
     end
-    it 'remenber the entry_station' do
-      subject.top_up(Oystercard::MINIMUM_BALANCE)
-      expect(subject.touch_in(station_1)).to be station_1
-    end
 
+    it 'remembers the entry station' do
+      subject.top_up(Oystercard::MINIMUM_BALANCE)
+      subject.touch_in(station_1)
+      expect(subject.starting_station).to be station_1
+    end
   end
 
   describe '#touch_out' do
@@ -59,11 +61,11 @@ describe Oystercard do
       expect { subject.touch_out(station_2) }.to change { subject.balance }.by(-Oystercard::MINIMUM_BALANCE)
     end
 
-    it "forget the entry_station" do
+    it "forgets the entry station" do
       subject.top_up(Oystercard::MINIMUM_BALANCE)
       subject.touch_in(station_1)
       subject.touch_out(station_2)
-      expect(subject.station_1).to eq nil
+      expect(subject.starting_station).to eq nil
     end
 
     it 'accept exit-station' do
