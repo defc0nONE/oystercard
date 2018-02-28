@@ -29,19 +29,25 @@ describe Oystercard do
       expect { subject.deduct 1 }.to change { subject.balance }.by(-1)
     end
   end
+
   describe '#in_journey?' do
-    it 'remenber that the user is travelling' do
-      expect(subject.in_journey?).to eq false
+    it 'checks the initial state is false' do
+      expect(subject).not_to be_in_journey
     end
   end
+
   describe '#touch_in' do
-   it 'recognize when we touch_in with the card' do
-     expect(subject.touch_in).to eq true
-   end
+    it 'recognize when we touch_in with the card' do
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end
   end
+
   describe '#touch_out' do
     it 'recognize when we touch_out with the card' do
-    expect(subject.touch_out).to eq true
+      subject.touch_in
+      subject.touch_out
+      expect(subject).not_to be_in_journey
     end
   end
 end
